@@ -96,6 +96,75 @@ namespace ExpMapGen
 		public MapSettings()
 		{
 		}
+
+		public void ParseCommand(MapGenCommand command)
+		{
+			int res = -1;
+			switch (command.Command) {
+			case "snow":
+				res = 0;
+				break;
+			case "ho":
+				res = 1;
+				break;
+			case "heightonly":
+				res = 1;
+				break;
+			case "noheight":
+				res = 2;
+				break;
+			case "nh":
+				res = 2;
+				break;
+			case "out":
+				res = 3;
+				break;
+			case "output":
+				res = 3;
+				break;
+			case "file":
+				res = 3;
+				break;
+			case "filename":
+				res = 3;
+				break;
+			}
+			switch (res) {
+			case 0:
+				if (!Boolean.TryParse(command.Args[0], out drawSnow)) {
+					Pluton.Logger.LogWarning(String.Format("Couldn't parse: {0} {1}", command.Command, command.Args[0]));
+				}
+				break;
+			case 1:
+				if (!Boolean.TryParse(command.Args[0], out onlyHeights)) {
+					Pluton.Logger.LogWarning(String.Format("Couldn't parse: {0} {1}", command.Command, command.Args[0]));
+				}
+				break;
+			case 2:
+				if (!Boolean.TryParse(command.Args[0], out oneColorPerSplat)) {
+					Pluton.Logger.LogWarning(String.Format("Couldn't parse: {0} {1}", command.Command, command.Args[0]));
+				}
+				break;
+			case 3:
+				string fn = String.Join(" ", command.Args);
+				fn = fn.Replace("%seed", global::World.Seed.ToString())
+					.Replace("%res", FinalResolution.ToString())
+					.Replace("%size", global::World.Size.ToString());
+
+				if (!fn.ToLower().EndsWith(".png"))
+					fn += ".png";
+
+				if (!String.IsNullOrEmpty(fn)) {
+					FileName = fn;
+				} else {
+					Pluton.Logger.LogWarning(String.Format("Couldn't parse: {0} {1}", command.Command, String.Join(" ", command.Args)));
+				}
+				break;
+			case -1:
+				Pluton.Logger.LogWarning(String.Format("Couldn't parse: {0} {1}", command.Command, String.Join(" ", command.Args)));
+				break;
+			}
+		}
 	}
 }
 

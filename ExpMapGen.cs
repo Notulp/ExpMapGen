@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Pluton;
 using UnityEngine;
@@ -22,7 +23,31 @@ namespace ExpMapGen
 		// TODO: handle args
 		public void Generate(string[] args)
 		{
+			string cmd = "";
+			List<string> arg = new List<string>();
 			MapSettings settings = new MapSettings();
+
+			for (int i = 0; i < args.Length; i++) {
+				string current = args[i];
+				bool last = i == (args.Length - 1);
+				if (current.StartsWith("-")) {
+					if (cmd != "") {
+						MapGenCommand command = new MapGenCommand(cmd, arg);
+						settings.ParseCommand(command);
+						arg = new List<string>();
+					}
+					cmd = current.Remove(0, 1);
+				} else {
+					if (cmd == "") {
+						continue;
+					}
+					arg.Add(current);
+				}
+				if (last) {
+					MapGenCommand command = new MapGenCommand(cmd, arg);
+					settings.ParseCommand(command);
+				}
+			}
 			GenerateMap(settings);
 		}
 

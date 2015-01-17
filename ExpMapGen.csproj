@@ -53,6 +53,7 @@
     <Compile Include="ExpMapGen.cs" />
     <Compile Include="Pixel.cs" />
     <Compile Include="Map.cs" />
+    <Compile Include="MapGenCommand.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
