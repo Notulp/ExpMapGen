@@ -20,7 +20,6 @@ namespace ExpMapGen
 				.setUsage("");
 		}
 
-		// TODO: handle args
 		public void Generate(string[] args)
 		{
 			string cmd = "";
@@ -56,12 +55,12 @@ namespace ExpMapGen
 			try {
 				TerrainGenerator tg = SingletonComponent<TerrainGenerator>.Instance;
 
-				heightmap = (float[,])tg.GetFieldValue("heightmap");
-				splatmap = (float[,,])tg.GetFieldValue("splatmap");
+				heightmap = (float[,])(tg.GetFieldValue("terrainHeightMap") as TerrainHeightMap).GetFieldValue("map");
+				splatmap = (float[,,])(tg.GetFieldValue("terrainSplatMap") as TerrainSplatMap).GetFieldValue("map");
 
 				Map map = new Map(heightmap, splatmap, settings);
 
-				SaveImage(map.mapSettings.FileName, map.ToPNG(map.GenerateTexture()));
+				SaveImage(map.mapSettings.FileName.Replace("%res", map.mapSettings.FinalResolution.ToString()), map.ToPNG(map.GenerateTexture()));
 
 			} catch (Exception ex) {
 				Logger.LogError(ex.StackTrace);

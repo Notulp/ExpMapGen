@@ -148,7 +148,6 @@ namespace ExpMapGen
 			case 3:
 				string fn = String.Join(" ", command.Args);
 				fn = fn.Replace("%seed", global::World.Seed.ToString())
-					.Replace("%res", FinalResolution.ToString())
 					.Replace("%size", global::World.Size.ToString());
 
 				if (!fn.ToLower().EndsWith(".png"))

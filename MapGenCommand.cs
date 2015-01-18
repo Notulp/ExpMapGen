@@ -23,7 +23,6 @@ namespace ExpMapGen
 
 		public MapGenCommand(string cmd, List<string> args)
 		{
-			Pluton.Logger.LogWarning("new mapgencommand: " + cmd + " " + String.Join(" ", args.ToArray()));
 			if (ValidCommands.Contains(cmd)) {
 				Command = cmd;
 			}
