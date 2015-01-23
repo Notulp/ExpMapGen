@@ -14,8 +14,8 @@ namespace ExpMapGen
 		public static Color GrassBrightest = new Color(0.234f, 0.58f, 0.34141f);
 		public static Color SandDarkest = new Color(0.738f, 0.715f, 0.42f);
 		public static Color SandBrightest = new Color(0.9375f, 0.885f, 0.547f);
-		public static Color DirtDarkest = new Color(0.543f, 0.27f, 0.075f);
-		public static Color DirtBrightest = new Color(0.8f, 0.52f, 0.25f);
+		public static Color DirtDarkest = new Color(0.328f, 0.207f, 0.125f);
+		public static Color DirtBrightest = new Color(0.4883f, 0.336f, 0.102f);
 		public static Color ForestDarkest = new Color(0.07f, 0.18f, 0.07f);
 		public static Color ForestBrightest = new Color(0.12f, 0.46f, 0.12f);
 		public static Color TundraDarkest = new Color(0.6f, 0.6f, 0.6f);
@@ -113,7 +113,7 @@ namespace ExpMapGen
 			return GetColorAtPercent(from, to, factor);
 		}
 
-		static Color result = new Color(5f,5f,5f);
+		static Color result = new Color(0f,0f,0f);
 		public Color CalculateSplatColor()
 		{
 			if (Map.map.mapSettings.onlyHeights) {
@@ -121,40 +121,37 @@ namespace ExpMapGen
 				return new Color(h, h, h);
 			}
 
-			/*if (Single.IsNaN(Rock)) {
-				return Lerp(DirtDarkest, DirtBrightest, Dirt);
-			}*/
-
-			Color rock = new Color();
-			Color grass = new Color();
-			Color sand = new Color();
-			//Color dirt = new Color();
-			Color forest = new Color();
-			Color tundra = new Color();
+			Color rock = Color.black;
+			Color grass = Color.black;
+			Color sand = Color.black;
+			Color dirt = Color.black;
+			Color forest = Color.black;
+			Color tundra = Color.black;
 			if (Rock != 0) {
 				rock = MoveByPercent(RockDarkest, RockBrightest, CalculatePercent());
-				result = MoveByPercent(result, rock, Rock * 100);
+				rock = MoveByPercent(result, rock, Rock * 100);
 			}
 			if (Grass != 0) {
 				grass = MoveByPercent(GrassDarkest, GrassBrightest, CalculatePercent());
-				result = MoveByPercent(result, grass, Grass * 100);
+				grass = MoveByPercent(result, grass, Grass * 100);
 			}
 			if (Sand != 0) {
 				sand = MoveByPercent(SandDarkest, SandBrightest, CalculatePercent());
-				result = MoveByPercent(result, sand, Sand * 100);
+				sand = MoveByPercent(result, sand, Sand * 100);
 			}
-			/*if (Dirt != 0) {
+			if (Dirt != 0) {
 				dirt = MoveByPercent(DirtDarkest, DirtBrightest, CalculatePercent());
-				result = MoveByPercent(result, dirt, Dirt * 100);
-			}*/
+				dirt = MoveByPercent(result, dirt, Dirt * 100);
+			}
 			if (Forest != 0) {
 				forest = MoveByPercent(ForestDarkest, ForestBrightest, CalculatePercent());
-				result = MoveByPercent(result, forest, Forest * 100);
+				forest = MoveByPercent(result, forest, Forest * 100);
 			}
 			if (Tundra != 0) {
 				tundra = MoveByPercent(TundraDarkest, TundraBrightest, CalculatePercent());
-				result = MoveByPercent(result, tundra, Tundra * 100);
+				tundra = MoveByPercent(result, tundra, Tundra * 100);
 			}
+			result = MixColors(rock, grass, sand, dirt, forest, tundra);
 
 			// Layers
 			if (Map.map.mapSettings.drawSnow) {
@@ -177,7 +174,7 @@ namespace ExpMapGen
 
 		public float CalculatePercent()
 		{
-			return 50f + ((LightLevel() - ShadowLevel()) * 12.5f) + (12.5f - StretchedHeightLevel() * 25f);
+			return 50f + ((LightLevel() - ShadowLevel()) * 12.5f) + (StretchedHeightLevel() * 25f) - 12.5f;
 		}
 
 		public float StretchedWaterLevel()
@@ -211,6 +208,23 @@ namespace ExpMapGen
 			ll += (Map.map.GetPixel(X + 1, Z).Height > Height) ? 1 : 0;
 			ll += (Map.map.GetPixel(X + 1, Z + 1).Height > Height) ? 1 : 0;
 			return ll;
+		}
+
+		public Color MixColors(params Color[] colors)
+		{
+			float r = 0f, g = 0f, b = 0f;
+			int count = 0;
+			for (int i = 0; i < colors.GetLength(0); i++) {
+				Color current = colors[i];
+				if (current == Color.black)
+					continue;
+
+				r += current.r;
+				g += current.g;
+				b += current.b;
+				count++;
+			}
+			return new Color(r / count, g / count, b / count);
 		}
 	}
 }
