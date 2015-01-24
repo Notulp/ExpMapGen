@@ -13,7 +13,6 @@ namespace ExpMapGen
 
 		public void On_PluginInit()
 		{
-			Logger.LogError("Works!");
 			ServerConsoleCommands.Register("genmap")
 				.setCallback(Generate)
 				.setDescription("Generates a map and saves to a .png file!")

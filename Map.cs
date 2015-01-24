@@ -25,6 +25,7 @@ namespace ExpMapGen
 			var minmax = MinMaxValue(heightmap);
 			Pixel.LowestPoint = minmax[0];
 			Pixel.HeighestPoint = minmax[1];
+			Pixel.MapSize = biomemap.GetLength(0);
 			Pixels = new Pixel[biomemap.GetLength(1), biomemap.GetLength(0)];
 
 			for (int x = 0; x < biomemap.GetLength(0); x++) {

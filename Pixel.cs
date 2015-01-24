@@ -27,6 +27,7 @@ namespace ExpMapGen
 		public static Color NoneDarkest = Color.magenta;
 		public static Color NoneBrightest = Color.magenta;
 
+		public static int MapSize = 0;
 
 		public int X;
 		public int Z;
@@ -195,18 +196,18 @@ namespace ExpMapGen
 		public int LightLevel()
 		{
 			int ll = 0;
-			ll += (Map.map.GetPixel(X, Z - 1).Height > Height) ? 1 : 0;
-			ll += (Map.map.GetPixel(X - 1, Z).Height > Height) ? 1 : 0;
-			ll += (Map.map.GetPixel(X - 1, Z - 1).Height > Height) ? 1 : 0;
+			ll += Z == 0 ? 1 : (Map.map.GetPixel(X, Z - 1).Height > Height) ? 1 : 0;
+			ll += X == 0 ? 1 :(Map.map.GetPixel(X - 1, Z).Height > Height) ? 1 : 0;
+			ll += (X == 0 || Z == 0) ? 1 : (Map.map.GetPixel(X - 1, Z - 1).Height > Height) ? 1 : 0;
 			return ll;
 		}
 
 		public int ShadowLevel()
 		{
 			int ll = 0;
-			ll += (Map.map.GetPixel(X, Z + 1).Height > Height) ? 1 : 0;
-			ll += (Map.map.GetPixel(X + 1, Z).Height > Height) ? 1 : 0;
-			ll += (Map.map.GetPixel(X + 1, Z + 1).Height > Height) ? 1 : 0;
+			ll += Z == MapSize ? 0 : (Map.map.GetPixel(X, Z + 1).Height > Height) ? 1 : 0;
+			ll += X == MapSize ? 0 : (Map.map.GetPixel(X + 1, Z).Height > Height) ? 1 : 0;
+			ll += (X == MapSize || Z == MapSize) ? 0 : (Map.map.GetPixel(X + 1, Z + 1).Height > Height) ? 1 : 0;
 			return ll;
 		}
 
