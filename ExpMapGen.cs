@@ -19,14 +19,14 @@ namespace ExpMapGen
 				.setUsage("");
 		}
 
-		public void Generate(string[] args)
+		public void Generate(object[] args)
 		{
 			string cmd = "";
 			List<string> arg = new List<string>();
 			MapSettings settings = new MapSettings();
 
 			for (int i = 0; i < args.Length; i++) {
-				string current = args[i];
+				string current = args[i] as string;
 				bool last = i == (args.Length - 1);
 				if (current.StartsWith("-")) {
 					if (cmd != "") {
