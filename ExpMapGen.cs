@@ -19,14 +19,14 @@ namespace ExpMapGen
 				.setUsage("");
 		}
 
-		public void Generate(object[] args)
+		public void Generate(string[] args)
 		{
 			string cmd = "";
 			List<string> arg = new List<string>();
 			MapSettings settings = new MapSettings();
 
 			for (int i = 0; i < args.Length; i++) {
-				string current = args[i] as string;
+				string current = args[i];
 				bool last = i == (args.Length - 1);
 				if (current.StartsWith("-")) {
 					if (cmd != "") {
@@ -60,7 +60,6 @@ namespace ExpMapGen
 				Map map = new Map(heightmap, splatmap, settings);
 
 				SaveImage(map.mapSettings.FileName.Replace("%res", map.mapSettings.FinalResolution.ToString()), map.ToPNG(map.GenerateTexture()));
-
 			} catch (Exception ex) {
 				Logger.LogError(ex.StackTrace);
 			}
@@ -68,10 +67,12 @@ namespace ExpMapGen
 
 		void SaveImage(string name, byte[] image)
 		{
-			if (image != null)
-				File.WriteAllBytes(Path.Combine(Plugin.RootDir.FullName, name), image);
-			else
-				Logger.LogWarning(name + " is a null texture");
+			if (image != null) {
+				File.WriteAllBytes (Path.Combine (Plugin.RootDir.FullName, name), image);
+				Debug.Log("Saved map: " + name);
+			} else {
+				Logger.LogWarning (name + " is a null texture");
+			}
 		}
 	}
 }
