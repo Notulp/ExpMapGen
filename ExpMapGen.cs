@@ -51,18 +51,14 @@ namespace ExpMapGen
 
 		public void GenerateMap(MapSettings settings)
 		{
-			try {
-				TerrainGenerator tg = SingletonComponent<TerrainGenerator>.Instance;
+			TerrainGenerator tg = SingletonComponent<TerrainGenerator>.Instance;
 
-				heightmap = (float[,])(tg.GetFieldValue("terrainHeightMap") as TerrainHeightMap).GetFieldValue("map");
-				splatmap = (float[,,])(tg.GetFieldValue("terrainSplatMap") as TerrainSplatMap).GetFieldValue("map");
+			heightmap = (float[,])(tg.GetFieldValue("terrainHeightMap") as TerrainHeightMap).GetFieldValue("map");
+			splatmap = (float[,,])(tg.GetFieldValue("terrainSplatMap") as TerrainSplatMap).GetFieldValue("map");
 
-				Map map = new Map(heightmap, splatmap, settings);
+			Map map = new Map(heightmap, splatmap, settings);
 
-				SaveImage(map.mapSettings.FileName.Replace("%res", map.mapSettings.FinalResolution.ToString()), map.ToPNG(map.GenerateTexture()));
-			} catch (Exception ex) {
-				Logger.LogError(ex.StackTrace);
-			}
+			SaveImage(map.mapSettings.FileName.Replace("%res", map.mapSettings.FinalResolution.ToString()), map.ToPNG(map.GenerateTexture()));
 		}
 
 		void SaveImage(string name, byte[] image)
