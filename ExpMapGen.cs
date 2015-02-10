@@ -51,10 +51,8 @@ namespace ExpMapGen
 
 		public void GenerateMap(MapSettings settings)
 		{
-			TerrainGenerator tg = SingletonComponent<TerrainGenerator>.Instance;
-
-			heightmap = (float[,])(tg.GetFieldValue("terrainHeightMap") as TerrainHeightMap).GetFieldValue("map");
-			splatmap = (float[,,])(tg.GetFieldValue("terrainSplatMap") as TerrainSplatMap).GetFieldValue("map");
+			heightmap = TerrainMeta.HeightMap.GetFieldValue("src") as float[,];
+			splatmap = TerrainMeta.SplatMap.GetFieldValue("src") as float[,,];
 
 			Map map = new Map(heightmap, splatmap, settings);
 

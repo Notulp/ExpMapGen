@@ -195,20 +195,30 @@ namespace ExpMapGen
 
 		public int LightLevel()
 		{
-			int ll = 0;
-			ll += Z == 0 ? 1 : (Map.map.GetPixel(X, Z - 1).Height > Height) ? 1 : 0;
-			ll += X == 0 ? 1 :(Map.map.GetPixel(X - 1, Z).Height > Height) ? 1 : 0;
-			ll += (X == 0 || Z == 0) ? 1 : (Map.map.GetPixel(X - 1, Z - 1).Height > Height) ? 1 : 0;
-			return ll;
+			try {
+				int ll = 0;
+				ll += Z == 0 ? 1 : (Map.map.GetPixel(X, Z - 1).Height > Height) ? 1 : 0;
+				ll += X == 0 ? 1 :(Map.map.GetPixel(X - 1, Z).Height > Height) ? 1 : 0;
+				ll += (X == 0 || Z == 0) ? 1 : (Map.map.GetPixel(X - 1, Z - 1).Height > Height) ? 1 : 0;
+				return ll;
+			} catch (Exception ex) {
+				//Pluton.Logger.LogException (ex);
+				return 0;
+			}
 		}
 
 		public int ShadowLevel()
 		{
-			int ll = 0;
-			ll += Z == MapSize ? 0 : (Map.map.GetPixel(X, Z + 1).Height > Height) ? 1 : 0;
-			ll += X == MapSize ? 0 : (Map.map.GetPixel(X + 1, Z).Height > Height) ? 1 : 0;
-			ll += (X == MapSize || Z == MapSize) ? 0 : (Map.map.GetPixel(X + 1, Z + 1).Height > Height) ? 1 : 0;
-			return ll;
+			try {
+				int ll = 0;
+				ll += Z == MapSize ? 0 : (Map.map.GetPixel(X, Z + 1).Height > Height) ? 1 : 0;
+				ll += X == MapSize ? 0 : (Map.map.GetPixel(X + 1, Z).Height > Height) ? 1 : 0;
+				ll += (X == MapSize || Z == MapSize) ? 0 : (Map.map.GetPixel(X + 1, Z + 1).Height > Height) ? 1 : 0;
+				return ll;
+			} catch (Exception ex) {
+				//Pluton.Logger.LogException (ex);
+				return 0;
+			}
 		}
 
 		public Color MixColors(params Color[] colors)

@@ -26,6 +26,8 @@ namespace ExpMapGen
 			Pixel.LowestPoint = minmax[0];
 			Pixel.HeighestPoint = minmax[1];
 			Pixel.MapSize = biomemap.GetLength(0);
+			//Pluton.Logger.LogWarning("Heightmap: " + heightmap.GetLength(0) + "x" + heightmap.GetLength(1) + " @" + minmax[0].ToString() + " - " + minmax[1].ToString());
+			//Pluton.Logger.LogWarning("Biomemap: " + biomemap.GetLength(0) + "x" + biomemap.GetLength(1) + "x" + biomemap.GetLength(2));
 			Pixels = new Pixel[biomemap.GetLength(1), biomemap.GetLength(0)];
 
 			for (int x = 0; x < biomemap.GetLength(0); x++) {
@@ -33,11 +35,16 @@ namespace ExpMapGen
 					Pixels[x, z] = new Pixel(x, z, heightmap, biomemap);
 				}
 			}
+
 		}
 
 		public Pixel GetPixel(int x, int z)
 		{
-			return Pixels[x, z];
+			try {
+				return Pixels[x, z];
+			} catch {
+				throw new Exception(String.Format("Invalid array index {0}:{1} [{2}:{3}]", x, z, Pixels.GetLength(0), Pixels.GetLength(1)));
+			}
 		}
 
 		float[] MinMaxValue(float[,] array)
