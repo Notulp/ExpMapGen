@@ -46,12 +46,16 @@ namespace ExpMapGen
 
 		public bool Water;
 
-		public Pixel(int x, int z, float[,] heightmap, float[,,] biomemap)
+		public Pixel(int x, int z, float[,] heightmap, float[,,] biomemap, bool twice)
 		{
 			X = x;
 			Z = z;
 
-			Height = heightmap[x, z];
+			if (!twice) {
+				Height = heightmap[x, z];
+			} else {
+				Height = heightmap[x * 2, z * 2];
+			}
 
 			Rock   = biomemap[x, z, 0];	
 			Grass  = biomemap[x, z, 1]; 

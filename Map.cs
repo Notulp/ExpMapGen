@@ -15,27 +15,32 @@ namespace ExpMapGen
 		public Map(float[,] heightmap, float[,,] biomemap, MapSettings settings)
 		{
 			mapSettings = settings;
-			if (mapSettings.FinalResolution == -1)
-				mapSettings.FinalResolution = biomemap.GetLength(0);
 
 			if (mapSettings.FileName == "")
 				mapSettings.FileName = ToString();
 
 			map = this;
-			var minmax = MinMaxValue(heightmap);
+
+			int heightLength = heightmap.GetLength(0) - 1;
+			int biomeLength = biomemap.GetLength(0);
+
+			bool twice = heightLength == biomeLength * 2;
+
+			var minmax = heightmap.MinMaxValue();
 			Pixel.LowestPoint = minmax[0];
 			Pixel.HeighestPoint = minmax[1];
-			Pixel.MapSize = biomemap.GetLength(0);
-			//Pluton.Logger.LogWarning("Heightmap: " + heightmap.GetLength(0) + "x" + heightmap.GetLength(1) + " @" + minmax[0].ToString() + " - " + minmax[1].ToString());
-			//Pluton.Logger.LogWarning("Biomemap: " + biomemap.GetLength(0) + "x" + biomemap.GetLength(1) + "x" + biomemap.GetLength(2));
-			Pixels = new Pixel[biomemap.GetLength(1), biomemap.GetLength(0)];
+			Pixel.MapSize = biomeLength;
+			if (mapSettings.FinalResolution == -1)
+				mapSettings.FinalResolution = Pixel.MapSize;
+			Pluton.Logger.LogWarning("Heightmap: " + heightLength + "x" + heightLength + " min-maxpoints: " + minmax[0].ToString() + " - " + minmax[1].ToString());
+			Pluton.Logger.LogWarning("Biomemap: " + biomeLength + "x" + biomeLength + "x" + biomemap.GetLength(2));
+			Pixels = new Pixel[biomeLength, biomeLength];
 
-			for (int x = 0; x < biomemap.GetLength(0); x++) {
-				for (int z = 0; z < biomemap.GetLength(1); z++) {
-					Pixels[x, z] = new Pixel(x, z, heightmap, biomemap);
+			for (int x = 0; x <biomeLength; x++) {
+				for (int z = 0; z < biomeLength; z++) {
+					Pixels[x, z] = new Pixel(x, z, heightmap, biomemap, twice);
 				}
 			}
-
 		}
 
 		public Pixel GetPixel(int x, int z)
@@ -45,28 +50,6 @@ namespace ExpMapGen
 			} catch {
 				throw new Exception(String.Format("Invalid array index {0}:{1} [{2}:{3}]", x, z, Pixels.GetLength(0), Pixels.GetLength(1)));
 			}
-		}
-
-		float[] MinMaxValue(float[,] array)
-		{
-			float min = -1;
-			float max = -1;
-			bool firstRun = true;
-			foreach (float current in array) {
-				if (firstRun) {
-					min = current;
-					max = current;
-					firstRun = false;
-					continue;
-				}
-
-				if (min > current)
-					min = current;
-
-				if (max < current)
-					max = current;
-			}
-			return new float[]{ min, max };
 		}
 
 		public Texture2D GenerateTexture()

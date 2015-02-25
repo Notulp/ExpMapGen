@@ -54,6 +54,7 @@
     <Compile Include="Pixel.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="MapGenCommand.cs" />
+    <Compile Include="MapEx.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
