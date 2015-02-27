@@ -8,6 +8,9 @@ namespace ExpMapGen
 {
 	public class ExpMapGen : CSharpPlugin
 	{
+		float[,] heightmap;
+		float[,,] splatmap;
+
 		public void On_PluginInit()
 		{
 			ServerConsoleCommands.Register("genmap")
@@ -44,14 +47,17 @@ namespace ExpMapGen
 				}
 			}
 			GenerateMap(settings);
-			Map.map = null;
 		}
 
 		public void GenerateMap(MapSettings settings)
 		{
-			Map map = new Map(settings);
+			heightmap = TerrainMeta.HeightMap.GetFieldValue("src") as float[,];
+			splatmap = TerrainMeta.SplatMap.GetFieldValue("src") as float[,,];
+
+			Map map = new Map(heightmap, splatmap, settings);
 
 			SaveImage(map.mapSettings.FileName.Replace("%res", map.mapSettings.FinalResolution.ToString()), map.ToPNG(map.GenerateTexture()));
+			map.Dispose();
 		}
 
 		void SaveImage(string name, byte[] image)

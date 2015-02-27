@@ -39,60 +39,64 @@ namespace ExpMapGen
 		public float Height {
  		 	get {
  		 		 if (!hackForBigMaps) {
-					return TerrainMeta.HeightMap.GetHeight01(new Vector3(X, 0f, Z));
+					return Map.map.HeightMap.GetAvrgValueAt(X, Z);
 		 	 	} else {
-					return TerrainMeta.HeightMap.GetHeight01(new Vector3(X, 0f, Z));
+					return Map.map.HeightMap.GetAvrgValueAt(X * 2, Z * 2);
 		 		} 
  		 	}
  		}
 
 		public float Rock {
  	 	 	get {
-				return TerrainMeta.SplatMap.GetSplat(new Vector3(X, 0f, Z), 0);
+				return Map.map.BiomeMap.GetAvrgValueAt(X, Z, 0);
  	 	 	} 
  	 	}
 		public float Grass {
  	 	 	get {
-				return TerrainMeta.SplatMap.GetSplat(new Vector3(X, 0f, Z), 1); 
+				return Map.map.BiomeMap.GetAvrgValueAt(X, Z, 1);
  	 	 	}
  	 	}
 		public float Sand {
  	 	 	get {
-				return TerrainMeta.SplatMap.GetSplat(new Vector3(X, 0f, Z), 2); 
+				return Map.map.BiomeMap.GetAvrgValueAt(X, Z, 2); 
  	 	 	}
  	 	}
 		public float Dirt {
  	 	 	get {
-				return TerrainMeta.SplatMap.GetSplat(new Vector3(X, 0f, Z), 3);
+				return Map.map.BiomeMap.GetAvrgValueAt(X, Z, 3);
  	 	 	}
  	 	}
 		public float Forest {
  	 	 	get {
-				return TerrainMeta.SplatMap.GetSplat(new Vector3(X, 0f, Z), 4); 
+				return Map.map.BiomeMap.GetAvrgValueAt(X, Z, 4);
  	 	 	}
  	 	}
 		public float Tundra {
  	 	 	get {
-				return TerrainMeta.SplatMap.GetSplat(new Vector3(X, 0f, Z), 5);
+				return Map.map.BiomeMap.GetAvrgValueAt(X, Z, 5);
  	 	 	}
  	 	}
 		public float Snow {
  	 	 	get {
-				return TerrainMeta.SplatMap.GetSplat(new Vector3(X, 0f, Z), 6);
+				return Map.map.BiomeMap.GetAvrgValueAt(X, Z, 6);
  	 	 	}
  	 	}
 		public float Path {
  	 	 	get {
-				return TerrainMeta.SplatMap.GetSplat(new Vector3(X, 0f, Z), 7);
+				return Map.map.BiomeMap.GetAvrgValueAt(X, Z, 7);
  	 	 	}
  	 	}
 		public float None {
  	 	 	get {
-				return TerrainMeta.SplatMap.GetSplat(new Vector3(X, 0f, Z), 8);
+				return Map.map.BiomeMap.GetAvrgValueAt(X, Z, 8);
  	 	 	}
  	 	}
 
-		public bool Water;
+		public bool Water {
+			get {
+				return Height < 0.5f;
+			}
+		}
 
 		public Pixel(float x, float z, bool twice = false)
 		{
@@ -100,13 +104,6 @@ namespace ExpMapGen
 			Z = z;
 
 			hackForBigMaps = twice;
-
-			Init();
-		}
-
-		public void Init()
-		{
-			Water = Height < 0.5f;
 		}
 
 		public Color GetColor()
@@ -235,9 +232,9 @@ namespace ExpMapGen
 		{
 			try {
 				int ll = 0;
-				ll += Z == 0 ? 1 : (Map.map.GetPixel(X.ToNormalized(), Z.ToNormalized() - 1).Height > Height) ? 1 : 0;
-				ll += X == 0 ? 1 :(Map.map.GetPixel(X.ToNormalized() - 1, Z.ToNormalized()).Height > Height) ? 1 : 0;
-				ll += (X == 0 || Z == 0) ? 1 : (Map.map.GetPixel(X.ToNormalized() - 1, Z.ToNormalized() - 1).Height > Height) ? 1 : 0;
+				ll += Z == 0 ? 1 : (Map.map.GetPixel(X, Z - Resolution).Height > Height) ? 1 : 0;
+				ll += X == 0 ? 1 :(Map.map.GetPixel(X - Resolution, Z).Height > Height) ? 1 : 0;
+				ll += (X == 0 || Z == 0) ? 1 : (Map.map.GetPixel(X - Resolution, Z - Resolution).Height > Height) ? 1 : 0;
 				return ll;
 			} catch (Exception ex) {
 				//Pluton.Logger.LogException (ex);
@@ -249,9 +246,9 @@ namespace ExpMapGen
 		{
 			try {
 				int ll = 0;
-				ll += Z == MapSize ? 0 : (Map.map.GetPixel(X.ToNormalized(), Z.ToNormalized() + 1).Height > Height) ? 1 : 0;
-				ll += X == MapSize ? 0 : (Map.map.GetPixel(X.ToNormalized() + 1, Z.ToNormalized()).Height > Height) ? 1 : 0;
-				ll += (X == MapSize || Z == MapSize) ? 0 : (Map.map.GetPixel(X.ToNormalized() + 1, Z.ToNormalized() + 1).Height > Height) ? 1 : 0;
+				ll += Z == MapSize ? 0 : (Map.map.GetPixel(X, Z + Resolution).Height > Height) ? 1 : 0;
+				ll += X == MapSize ? 0 : (Map.map.GetPixel(X + Resolution, Z).Height > Height) ? 1 : 0;
+				ll += (X == MapSize || Z == MapSize) ? 0 : (Map.map.GetPixel(X + Resolution, Z + Resolution).Height > Height) ? 1 : 0;
 				return ll;
 			} catch (Exception ex) {
 				//Pluton.Logger.LogException (ex);

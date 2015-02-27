@@ -5,37 +5,57 @@ using UnityEngine;
 
 namespace ExpMapGen
 {
-	public class Map
+	public class Map : IDisposable
 	{
+		public void Dispose ()
+		{
+			map = null;
+		}
+
 		public Pixel[,] Pixels;
 
 		public static Map map;
 
 		public MapSettings mapSettings;
+		public float[,] HeightMap;
+		public float[,,] BiomeMap;
 
-		public Map(MapSettings settings)
+		public Map(float[,] heightmap, float[,,] biomemap, MapSettings settings)
 		{
 			mapSettings = settings;
+
+			HeightMap = heightmap;
+			BiomeMap = biomemap;
+
+			map = this;
+
+			int heightLength = heightmap.GetLength(0) - 1;
+			int biomeLength = biomemap.GetLength(0);
+
+			bool twice = heightLength == biomeLength * 2;
+
+			var minmax = heightmap.MinMaxValue();
+
+			Pixel.LowestPoint = minmax[0];
+			Pixel.HeighestPoint = minmax[1];
+
+			Pixel.MapSize = biomeLength;
+
+			if (mapSettings.FinalResolution == -1)
+				mapSettings.FinalResolution = Pixel.MapSize;
+
+			Pixel.Resolution = (float)Pixel.MapSize / (float)mapSettings.FinalResolution;
+			Pluton.Logger.LogWarning("Heightmap: " + heightLength + "x" + heightLength + " min-maxpoints: " + minmax[0].ToString() + " - " + minmax[1].ToString());
+			Pluton.Logger.LogWarning("Biomemap: " + biomeLength + "x" + biomeLength + "x" + biomemap.GetLength(2));
+			Pixels = new Pixel[mapSettings.FinalResolution, mapSettings.FinalResolution];
 
 			if (mapSettings.FileName == "")
 				mapSettings.FileName = ToString();
 
-			if (mapSettings.FinalResolution == -1)
-				mapSettings.FinalResolution = (int)global::World.Size;
-
-			Pixel.Resolution = (float)global::World.Size / (float)mapSettings.FinalResolution;
-
-			map = this;
-
-			Pixel.HeighestPoint = 0.8f;
-			Pixel.LowestPoint = 0.4f;
-
-			Pixels = new Pixel[mapSettings.FinalResolution, mapSettings.FinalResolution];
-
 			using (new Pluton.Stopper("Map ", " -> generate pixels")) {
-				Parallel.For(0, mapSettings.FinalResolution, delegate (int x) {
+				Parallel.For (0, mapSettings.FinalResolution, delegate (int x) {
 					for (int z = 0; z < mapSettings.FinalResolution; z++) {
-						Pixels[x, z] = new Pixel(((float)x).ToWorldCoordinate(), ((float)z).ToWorldCoordinate());
+						Pixels[x, z] = new Pixel((float)x * Pixel.Resolution, (float)z * Pixel.Resolution, twice);
 					}
 				});
 			}
@@ -53,7 +73,7 @@ namespace ExpMapGen
 		public Pixel GetPixel(float x, float z)
 		{
 			try {
-				return Pixels[UnityEngine.Mathf.RoundToInt(x), UnityEngine.Mathf.RoundToInt(z)];
+				return Pixels[UnityEngine.Mathf.RoundToInt(x / Pixel.Resolution), UnityEngine.Mathf.RoundToInt(z / Pixel.Resolution)];
 			} catch {
 				throw new Exception(String.Format("Invalid array index {0}:{1} [{2}:{3}]", x, z, Pixels.GetLength(0), Pixels.GetLength(1)));
 			}
@@ -66,10 +86,8 @@ namespace ExpMapGen
 			Pluton.Logger.Log(String.Format("Generating texture: {0}x{1}", Pixels.GetLength(0), Pixels.GetLength(1)));
 
 			using (new Pluton.Stopper("Map", "GenerateTexture()")) {
-				for (int x = 0; x < mapSettings.FinalResolution; x++) {
-					for (int z = 0; z < mapSettings.FinalResolution; z++) {
-						result.SetPixel(x, z, GetPixel(x, z).GetColor());
-					}
+				foreach (Pixel pix in Pixels) {
+					result.SetPixel(UnityEngine.Mathf.RoundToInt(pix.Z / Pixel.Resolution), UnityEngine.Mathf.RoundToInt(pix.X / Pixel.Resolution), pix.GetColor());
 				}
 			}
 			result.Apply();
