@@ -26,43 +26,14 @@ namespace ExpMapGen
 			return new float[]{ min, max };
 		}
 
-		public static float[,] Stretch(this float[,] self, int newsize)
+		public static float ToNormalized(this float self)
 		{
-			float[,] result = new float[newsize, newsize];
-			float sizemultiplier = newsize / self.GetLength(0);
-			for (int x = 0; x < newsize; x++) {
-				for (int z = 0; z < newsize; z++) {
-					result[x, z] = self.GetAvrgValueAt(x / sizemultiplier, z / sizemultiplier);
-				}
-			}
-			return result;
+			return ((float)self + (global::World.Size / 2)) / Pixel.Resolution;
 		}
 
-		public static float GetAvrgValueAt(this float[,] self, float x, float z)
+		public static float ToWorldCoordinate(this float self)
 		{
-			try {
-				int xmin = UnityEngine.Mathf.FloorToInt(x);
-				int zmin = UnityEngine.Mathf.FloorToInt(z);
-				int xmax = xmin + 1;
-				int zmax = zmin + 1;
-				float xpercent = GetPercent(xmin, xmax, x);
-				float zpercent = GetPercent(zmin, zmax, z);
-				float xbw = GetValueAtPercent(self[xmin, zmin], self[xmax, zmin], xpercent);
-				float zbw = GetValueAtPercent(self[xmin, zmin], self[xmin, zmax], zpercent);
-				return (zbw + xbw) / 2;
-			} catch (Exception ex) {
-				return 0f;
-			}
-		}
-
-		public static float GetPercent(float min, float max, float pointbetween)
-		{
-			return (pointbetween - min) / ((max - min) / 100);
-		}
-
-		public static float GetValueAtPercent(float min, float max, float percent)
-		{
-			return ((max - min) / 100) * percent + min;
+			return ((float)self * Pixel.Resolution) - (global::World.Size / 2);
 		}
 	}
 }

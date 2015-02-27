@@ -12,39 +12,32 @@ namespace ExpMapGen
 		public static Map map;
 
 		public MapSettings mapSettings;
- 		public float[,] HeightMap;
- 		public float[,,] BiomeMap; 
 
-		public Map(float[,] heightmap, float[,,] biomemap, MapSettings settings)
+		public Map(MapSettings settings)
 		{
 			mapSettings = settings;
 
 			if (mapSettings.FileName == "")
 				mapSettings.FileName = ToString();
 
-			map = this;
- 		 	HeightMap = heightmap;
- 		 	BiomeMap = biomemap;
- 
-			int heightLength = heightmap.GetLength(0) - 1;
-			int biomeLength = biomemap.GetLength(0);
-
-			bool twice = heightLength == biomeLength * 2;
-
-			var minmax = heightmap.MinMaxValue();
-			Pixel.LowestPoint = minmax[0];
-			Pixel.HeighestPoint = minmax[1];
-			Pixel.MapSize = biomeLength;
 			if (mapSettings.FinalResolution == -1)
-				mapSettings.FinalResolution = Pixel.MapSize;
-			Pluton.Logger.LogWarning("Heightmap: " + heightLength + "x" + heightLength + " min-maxpoints: " + minmax[0].ToString() + " - " + minmax[1].ToString());
-			Pluton.Logger.LogWarning("Biomemap: " + biomeLength + "x" + biomeLength + "x" + biomemap.GetLength(2));
-			Pixels = new Pixel[biomeLength, biomeLength];
+				mapSettings.FinalResolution = (int)global::World.Size;
 
-			for (int x = 0; x <biomeLength; x++) {
-				for (int z = 0; z < biomeLength; z++) {
-					Pixels[x, z] = new Pixel(x, z, twice);
-				}
+			Pixel.Resolution = (float)global::World.Size / (float)mapSettings.FinalResolution;
+
+			map = this;
+
+			Pixel.HeighestPoint = 0.8f;
+			Pixel.LowestPoint = 0.4f;
+
+			Pixels = new Pixel[mapSettings.FinalResolution, mapSettings.FinalResolution];
+
+			using (new Pluton.Stopper("Map ", " -> generate pixels")) {
+				Parallel.For(0, mapSettings.FinalResolution, delegate (int x) {
+					for (int z = 0; z < mapSettings.FinalResolution; z++) {
+						Pixels[x, z] = new Pixel(((float)x).ToWorldCoordinate(), ((float)z).ToWorldCoordinate());
+					}
+				});
 			}
 		}
 
@@ -57,15 +50,30 @@ namespace ExpMapGen
 			}
 		}
 
+		public Pixel GetPixel(float x, float z)
+		{
+			try {
+				return Pixels[UnityEngine.Mathf.RoundToInt(x), UnityEngine.Mathf.RoundToInt(z)];
+			} catch {
+				throw new Exception(String.Format("Invalid array index {0}:{1} [{2}:{3}]", x, z, Pixels.GetLength(0), Pixels.GetLength(1)));
+			}
+		}
+
 		public Texture2D GenerateTexture()
 		{
 			Texture2D result = new Texture2D(Pixels.GetLength(0), Pixels.GetLength(1));
-			foreach (Pixel pix in Pixels) {
-				result.SetPixel(pix.Z, pix.X, pix.GetColor());
+
+			Pluton.Logger.Log(String.Format("Generating texture: {0}x{1}", Pixels.GetLength(0), Pixels.GetLength(1)));
+
+			using (new Pluton.Stopper("Map", "GenerateTexture()")) {
+				for (int x = 0; x < mapSettings.FinalResolution; x++) {
+					for (int z = 0; z < mapSettings.FinalResolution; z++) {
+						result.SetPixel(x, z, GetPixel(x, z).GetColor());
+					}
+				}
 			}
 			result.Apply();
 			return result;
-
 		}
 
 		public byte[] ToPNG(Texture2D t)
@@ -101,28 +109,22 @@ namespace ExpMapGen
 				res = 0;
 				break;
 			case "ho":
-				res = 1;
-				break;
 			case "heightonly":
 				res = 1;
 				break;
 			case "noheight":
-				res = 2;
-				break;
 			case "nh":
 				res = 2;
 				break;
 			case "out":
-				res = 3;
-				break;
 			case "output":
-				res = 3;
-				break;
 			case "file":
-				res = 3;
-				break;
 			case "filename":
 				res = 3;
+				break;
+			case "res":
+			case "result":
+				res = 4;
 				break;
 			}
 			switch (res) {
@@ -153,6 +155,11 @@ namespace ExpMapGen
 					FileName = fn;
 				} else {
 					Pluton.Logger.LogWarning(String.Format("Couldn't parse: {0} {1}", command.Command, String.Join(" ", command.Args)));
+				}
+				break;
+			case 4:
+				if (!Int32.TryParse(command.Args[0], out FinalResolution)) {
+					Pluton.Logger.LogWarning(String.Format("Couldn't parse: {0} {1}", command.Command, command.Args[0]));
 				}
 				break;
 			case -1:

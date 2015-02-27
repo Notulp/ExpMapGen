@@ -22,77 +22,79 @@ namespace ExpMapGen
 		public static Color TundraBrightest = new Color(0.8f, 0.8f, 0.8f);
 		public static Color SnowDarkest = new Color(0.8f, 0.8f, 0.8f);
 		public static Color SnowBrightest = new Color(1f, 1f, 1f);
-		public static Color PathDarkest = Color.cyan;
-		public static Color PathBrightest = Color.cyan;
+		public static Color PathDarkest = new Color(0.5f, 0.4f, 0.26f);
+		public static Color PathBrightest = new Color(0.8f, 0.65f, 0.58f);
 		public static Color NoneDarkest = Color.magenta;
 		public static Color NoneBrightest = Color.magenta;
 
 		public static int MapSize = 0;
 
-		public int X;
-		public int Z;
+		public static float Resolution = 1f;
+
+		public float X;
+		public float Z;
 
  		public bool hackForBigMaps; 
 
 		public float Height {
  		 	get {
  		 		 if (!hackForBigMaps) {
-		 	 	 	return Map.map.HeightMap[X, Z];
+					return TerrainMeta.HeightMap.GetHeight01(new Vector3(X, 0f, Z));
 		 	 	} else {
-			 	 	 return Map.map.HeightMap[X * 2, Z * 2];
+					return TerrainMeta.HeightMap.GetHeight01(new Vector3(X, 0f, Z));
 		 		} 
  		 	}
  		}
 
 		public float Rock {
  	 	 	get {
- 	 	 	 	return Map.map.BiomeMap[X, Z, 0]; 
+				return TerrainMeta.SplatMap.GetSplat(new Vector3(X, 0f, Z), 0);
  	 	 	} 
  	 	}
 		public float Grass {
  	 	 	get {
- 	 	 	 	return Map.map.BiomeMap[X, Z, 1]; 
+				return TerrainMeta.SplatMap.GetSplat(new Vector3(X, 0f, Z), 1); 
  	 	 	}
  	 	}
 		public float Sand {
  	 	 	get {
- 	 	 	 	return Map.map.BiomeMap[X, Z, 2]; 
+				return TerrainMeta.SplatMap.GetSplat(new Vector3(X, 0f, Z), 2); 
  	 	 	}
  	 	}
 		public float Dirt {
  	 	 	get {
- 	 	 	 	return Map.map.BiomeMap[X, Z, 3];
+				return TerrainMeta.SplatMap.GetSplat(new Vector3(X, 0f, Z), 3);
  	 	 	}
  	 	}
 		public float Forest {
  	 	 	get {
- 	 	 	 	return Map.map.BiomeMap[X, Z, 4]; 
+				return TerrainMeta.SplatMap.GetSplat(new Vector3(X, 0f, Z), 4); 
  	 	 	}
  	 	}
 		public float Tundra {
  	 	 	get {
- 	 	 	 	return Map.map.BiomeMap[X, Z, 5];
+				return TerrainMeta.SplatMap.GetSplat(new Vector3(X, 0f, Z), 5);
  	 	 	}
  	 	}
 		public float Snow {
  	 	 	get {
- 	 	 	 	return Map.map.BiomeMap[X, Z, 6];
+				return TerrainMeta.SplatMap.GetSplat(new Vector3(X, 0f, Z), 6);
  	 	 	}
  	 	}
 		public float Path {
  	 	 	get {
- 	 	 	 	return Map.map.BiomeMap[X, Z, 7];
+				return TerrainMeta.SplatMap.GetSplat(new Vector3(X, 0f, Z), 7);
  	 	 	}
  	 	}
 		public float None {
  	 	 	get {
- 	 	 	 	return Map.map.BiomeMap[X, Z, 8];
+				return TerrainMeta.SplatMap.GetSplat(new Vector3(X, 0f, Z), 8);
  	 	 	}
  	 	}
 
 		public bool Water;
 
-		public Pixel(int x, int z, bool twice)
+		public Pixel(float x, float z, bool twice = false)
 		{
 			X = x;
 			Z = z;
@@ -117,10 +119,10 @@ namespace ExpMapGen
 		public Color CalculateWaterColor()
 		{
 			if (Map.map.mapSettings.oneColorPerSplat) {
-				return new Color (0.125f, 0.595f, 0.664f);
+				return new Color(0.125f, 0.595f, 0.664f);
 			}
-			Color wD = new Color (0.01f, 0.123f, 0.14f);
-			Color wS = new Color (0.125f, 0.595f, 0.664f);
+			Color wD = new Color(0.01f, 0.123f, 0.14f);
+			Color wS = new Color(0.125f, 0.595f, 0.664f);
 			return MoveByPercent(wD, wS, StretchedWaterLevel() * 100);
 		}
 
@@ -233,9 +235,9 @@ namespace ExpMapGen
 		{
 			try {
 				int ll = 0;
-				ll += Z == 0 ? 1 : (Map.map.GetPixel(X, Z - 1).Height > Height) ? 1 : 0;
-				ll += X == 0 ? 1 :(Map.map.GetPixel(X - 1, Z).Height > Height) ? 1 : 0;
-				ll += (X == 0 || Z == 0) ? 1 : (Map.map.GetPixel(X - 1, Z - 1).Height > Height) ? 1 : 0;
+				ll += Z == 0 ? 1 : (Map.map.GetPixel(X.ToNormalized(), Z.ToNormalized() - 1).Height > Height) ? 1 : 0;
+				ll += X == 0 ? 1 :(Map.map.GetPixel(X.ToNormalized() - 1, Z.ToNormalized()).Height > Height) ? 1 : 0;
+				ll += (X == 0 || Z == 0) ? 1 : (Map.map.GetPixel(X.ToNormalized() - 1, Z.ToNormalized() - 1).Height > Height) ? 1 : 0;
 				return ll;
 			} catch (Exception ex) {
 				//Pluton.Logger.LogException (ex);
@@ -247,9 +249,9 @@ namespace ExpMapGen
 		{
 			try {
 				int ll = 0;
-				ll += Z == MapSize ? 0 : (Map.map.GetPixel(X, Z + 1).Height > Height) ? 1 : 0;
-				ll += X == MapSize ? 0 : (Map.map.GetPixel(X + 1, Z).Height > Height) ? 1 : 0;
-				ll += (X == MapSize || Z == MapSize) ? 0 : (Map.map.GetPixel(X + 1, Z + 1).Height > Height) ? 1 : 0;
+				ll += Z == MapSize ? 0 : (Map.map.GetPixel(X.ToNormalized(), Z.ToNormalized() + 1).Height > Height) ? 1 : 0;
+				ll += X == MapSize ? 0 : (Map.map.GetPixel(X.ToNormalized() + 1, Z.ToNormalized()).Height > Height) ? 1 : 0;
+				ll += (X == MapSize || Z == MapSize) ? 0 : (Map.map.GetPixel(X.ToNormalized() + 1, Z.ToNormalized() + 1).Height > Height) ? 1 : 0;
 				return ll;
 			} catch (Exception ex) {
 				//Pluton.Logger.LogException (ex);

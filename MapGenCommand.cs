@@ -15,7 +15,9 @@ namespace ExpMapGen
 			"file",
 			"output",
 			"filename",
-			"out"
+			"out",
+			"result",
+			"res"
 		};
 
 		public String Command;
