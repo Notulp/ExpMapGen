@@ -26,29 +26,6 @@ namespace ExpMapGen
 			return new float[]{ min, max };
 		}
 
-		public static float ToNormalized(this float self)
-		{
-			return ((float)self + (global::World.Size / 2)) / Pixel.Resolution;
-		}
-
-		public static float ToWorldCoordinate(this float self)
-		{
-			return ((float)self * Pixel.Resolution) - (global::World.Size / 2);
-		}
-
-
-		public static float[,] Stretch(this float[,] self, int newsize)
-		{
-			float[,] result = new float[newsize, newsize];
-			float sizemultiplier = newsize / self.GetLength(0);
-			for (int x = 0; x < newsize; x++) {
-				for (int z = 0; z < newsize; z++) {
-					result[x, z] = self.GetAvrgValueAt(x / sizemultiplier, z / sizemultiplier);
-				}
-			}
-			return result;
-		}
-
 		public static float GetAvrgValueAt(this float[,] self, float x, float z)
 		{
 			try {
