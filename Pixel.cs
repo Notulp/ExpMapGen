@@ -32,40 +32,72 @@ namespace ExpMapGen
 		public int X;
 		public int Z;
 
-		public float Height;
+ 		public bool hackForBigMaps; 
 
-		public float Rock;		// 0
-		public float Grass; 	// 1
-		public float Sand;		// 2
-		public float Dirt;		// 3
-		public float Forest;	// 4
-		public float Tundra;	// 5
-		public float Snow;		// 6
-		public float Path;		// 7
-		public float None;		// 8
+		public float Height {
+ 		 	get {
+ 		 		 if (!hackForBigMaps) {
+		 	 	 	return Map.map.HeightMap[X, Z];
+		 	 	} else {
+			 	 	 return Map.map.HeightMap[X * 2, Z * 2];
+		 		} 
+ 		 	}
+ 		}
+
+		public float Rock {
+ 	 	 	get {
+ 	 	 	 	return Map.map.BiomeMap[X, Z, 0]; 
+ 	 	 	} 
+ 	 	}
+		public float Grass {
+ 	 	 	get {
+ 	 	 	 	return Map.map.BiomeMap[X, Z, 1]; 
+ 	 	 	}
+ 	 	}
+		public float Sand {
+ 	 	 	get {
+ 	 	 	 	return Map.map.BiomeMap[X, Z, 2]; 
+ 	 	 	}
+ 	 	}
+		public float Dirt {
+ 	 	 	get {
+ 	 	 	 	return Map.map.BiomeMap[X, Z, 3];
+ 	 	 	}
+ 	 	}
+		public float Forest {
+ 	 	 	get {
+ 	 	 	 	return Map.map.BiomeMap[X, Z, 4]; 
+ 	 	 	}
+ 	 	}
+		public float Tundra {
+ 	 	 	get {
+ 	 	 	 	return Map.map.BiomeMap[X, Z, 5];
+ 	 	 	}
+ 	 	}
+		public float Snow {
+ 	 	 	get {
+ 	 	 	 	return Map.map.BiomeMap[X, Z, 6];
+ 	 	 	}
+ 	 	}
+		public float Path {
+ 	 	 	get {
+ 	 	 	 	return Map.map.BiomeMap[X, Z, 7];
+ 	 	 	}
+ 	 	}
+		public float None {
+ 	 	 	get {
+ 	 	 	 	return Map.map.BiomeMap[X, Z, 8];
+ 	 	 	}
+ 	 	}
 
 		public bool Water;
 
-		public Pixel(int x, int z, float[,] heightmap, float[,,] biomemap, bool twice)
+		public Pixel(int x, int z, bool twice)
 		{
 			X = x;
 			Z = z;
 
-			if (!twice) {
-				Height = heightmap[x, z];
-			} else {
-				Height = heightmap[x * 2, z * 2];
-			}
-
-			Rock   = biomemap[x, z, 0];	
-			Grass  = biomemap[x, z, 1]; 
-			Sand   = biomemap[x, z, 2];	
-			Dirt   = biomemap[x, z, 3];	
-			Forest = biomemap[x, z, 4];
-			Tundra = biomemap[x, z, 5];
-			Snow   = biomemap[x, z, 6];
-			Path   = biomemap[x, z, 7];
-			None   = biomemap[x, z, 8];
+			hackForBigMaps = twice;
 
 			Init();
 		}
