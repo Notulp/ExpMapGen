@@ -123,7 +123,7 @@ namespace ExpMapGen
 				res = 3;
 				break;
 			case "res":
-			case "result":
+			case "resolution":
 				res = 4;
 				break;
 			}

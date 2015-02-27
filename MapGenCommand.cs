@@ -16,7 +16,7 @@ namespace ExpMapGen
 			"output",
 			"filename",
 			"out",
-			"result",
+			"resolution",
 			"res"
 		};
 
