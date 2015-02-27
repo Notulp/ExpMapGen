@@ -10,7 +10,10 @@ namespace ExpMapGen
 		public Pixel[,] Pixels;
 
 		public static Map map;
+
 		public MapSettings mapSettings;
+ 		public float[,] HeightMap;
+ 		public float[,,] BiomeMap; 
 
 		public Map(float[,] heightmap, float[,,] biomemap, MapSettings settings)
 		{
@@ -20,7 +23,9 @@ namespace ExpMapGen
 				mapSettings.FileName = ToString();
 
 			map = this;
-
+ 		 	HeightMap = heightmap;
+ 		 	BiomeMap = biomemap;
+ 
 			int heightLength = heightmap.GetLength(0) - 1;
 			int biomeLength = biomemap.GetLength(0);
 
@@ -38,7 +43,7 @@ namespace ExpMapGen
 
 			for (int x = 0; x <biomeLength; x++) {
 				for (int z = 0; z < biomeLength; z++) {
-					Pixels[x, z] = new Pixel(x, z, heightmap, biomemap, twice);
+					Pixels[x, z] = new Pixel(x, z, twice);
 				}
 			}
 		}
