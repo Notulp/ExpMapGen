@@ -48,47 +48,47 @@ namespace ExpMapGen
 
 		public float Rock {
  	 	 	get {
-				return Map.map.BiomeMap.GetAvrgValueAt(X, Z, 0);
+				return Map.map.SplatMap.GetAvrgValueAt(X, Z, 0);
  	 	 	} 
  	 	}
 		public float Grass {
  	 	 	get {
-				return Map.map.BiomeMap.GetAvrgValueAt(X, Z, 1);
+				return Map.map.SplatMap.GetAvrgValueAt(X, Z, 1);
  	 	 	}
  	 	}
 		public float Sand {
  	 	 	get {
-				return Map.map.BiomeMap.GetAvrgValueAt(X, Z, 2); 
+				return Map.map.SplatMap.GetAvrgValueAt(X, Z, 2); 
  	 	 	}
  	 	}
 		public float Dirt {
  	 	 	get {
-				return Map.map.BiomeMap.GetAvrgValueAt(X, Z, 3);
+				return Map.map.SplatMap.GetAvrgValueAt(X, Z, 3);
  	 	 	}
  	 	}
 		public float Forest {
  	 	 	get {
-				return Map.map.BiomeMap.GetAvrgValueAt(X, Z, 4);
+				return Map.map.SplatMap.GetAvrgValueAt(X, Z, 4);
  	 	 	}
  	 	}
 		public float Tundra {
  	 	 	get {
-				return Map.map.BiomeMap.GetAvrgValueAt(X, Z, 5);
+				return Map.map.SplatMap.GetAvrgValueAt(X, Z, 5);
  	 	 	}
  	 	}
 		public float Snow {
  	 	 	get {
-				return Map.map.BiomeMap.GetAvrgValueAt(X, Z, 6);
+				return Map.map.SplatMap.GetAvrgValueAt(X, Z, 6);
  	 	 	}
  	 	}
 		public float Path {
  	 	 	get {
-				return Map.map.BiomeMap.GetAvrgValueAt(X, Z, 7);
+				return Map.map.SplatMap.GetAvrgValueAt(X, Z, 7);
  	 	 	}
  	 	}
 		public float None {
  	 	 	get {
-				return Map.map.BiomeMap.GetAvrgValueAt(X, Z, 8);
+				return Map.map.SplatMap.GetAvrgValueAt(X, Z, 8);
  	 	 	}
  	 	}
 

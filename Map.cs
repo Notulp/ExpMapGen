@@ -5,48 +5,43 @@ using UnityEngine;
 
 namespace ExpMapGen
 {
-	public class Map : IDisposable
+	public class Map
 	{
-		public void Dispose ()
-		{
-			map = null;
-		}
-
 		public Pixel[,] Pixels;
 
 		public static Map map;
 
 		public MapSettings mapSettings;
 		public float[,] HeightMap;
-		public float[,,] BiomeMap;
+		public float[,,] SplatMap;
 
-		public Map(float[,] heightmap, float[,,] biomemap, MapSettings settings)
+		public Map(float[,] heightmap, float[,,] splatmap, MapSettings settings)
 		{
 			mapSettings = settings;
 
 			HeightMap = heightmap;
-			BiomeMap = biomemap;
+			SplatMap = splatmap;
 
 			map = this;
 
 			int heightLength = heightmap.GetLength(0) - 1;
-			int biomeLength = biomemap.GetLength(0);
+			int splatLength = splatmap.GetLength(0);
 
-			bool twice = heightLength == biomeLength * 2;
+			bool twice = heightLength == splatLength * 2;
 
 			var minmax = heightmap.MinMaxValue();
 
 			Pixel.LowestPoint = minmax[0];
 			Pixel.HeighestPoint = minmax[1];
 
-			Pixel.MapSize = biomeLength;
+			Pixel.MapSize = splatLength;
 
 			if (mapSettings.FinalResolution == -1)
 				mapSettings.FinalResolution = Pixel.MapSize;
 
 			Pixel.Resolution = (float)Pixel.MapSize / (float)mapSettings.FinalResolution;
 			Pluton.Logger.LogWarning("Heightmap: " + heightLength + "x" + heightLength + " min-maxpoints: " + minmax[0].ToString() + " - " + minmax[1].ToString());
-			Pluton.Logger.LogWarning("Biomemap: " + biomeLength + "x" + biomeLength + "x" + biomemap.GetLength(2));
+			Pluton.Logger.LogWarning("Biomemap: " + splatLength + "x" + splatLength + "x" + splatmap.GetLength(2));
 			Pixels = new Pixel[mapSettings.FinalResolution, mapSettings.FinalResolution];
 
 			if (mapSettings.FileName == "")
