@@ -13,9 +13,9 @@ namespace ExpMapGen
 
 		public MapSettings mapSettings;
 		public float[,] HeightMap;
-		public float[,,] SplatMap;
+		public byte[,,] SplatMap;
 
-		public Map(float[,] heightmap, float[,,] splatmap, MapSettings settings)
+		public Map(float[,] heightmap, byte[,,] splatmap, MapSettings settings)
 		{
 			mapSettings = settings;
 

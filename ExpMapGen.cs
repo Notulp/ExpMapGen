@@ -49,7 +49,12 @@ namespace ExpMapGen
 		public void GenerateMap(MapSettings settings)
 		{
 			float[,] heightmap = TerrainMeta.HeightMap.GetFieldValue("src") as float[,];
-			float[,,] splatmap = TerrainMeta.SplatMap.GetFieldValue("src") as float[,,];
+			byte[,,] splatmap = TerrainMeta.SplatMap.GetFieldValue("src") as byte[,,];
+
+			if (heightmap == null || splatmap == null) {
+				Logger.LogWarning ("null map?");
+				return;
+			}
 
 			Map map = new Map(heightmap, splatmap, settings);
 

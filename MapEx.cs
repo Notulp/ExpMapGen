@@ -60,6 +60,23 @@ namespace ExpMapGen
 			}
 		}
 
+		public static float GetAvrgValueAt(this byte[,,] self, float x, float z, int splattype)
+		{
+			try {
+				int xmin = UnityEngine.Mathf.FloorToInt(x);
+				int zmin = UnityEngine.Mathf.FloorToInt(z);
+				int xmax = xmin + 1;
+				int zmax = zmin + 1;
+				float xpercent = GetPercent(xmin, xmax, x);
+				float zpercent = GetPercent(zmin, zmax, z);
+				float xbw = GetValueAtPercent((float)self[xmin, zmin, splattype] / 255f, (float)self[xmax, zmin, splattype] / 255f, xpercent);
+				float zbw = GetValueAtPercent((float)self[xmin, zmin, splattype] / 255f, (float)self[xmin, zmax, splattype] / 255f, zpercent);
+				return (zbw + xbw) / 2;
+			} catch (Exception ex) {
+				return 0f;
+			}
+		}
+
 		public static float GetPercent(float min, float max, float pointbetween)
 		{
 			return (pointbetween - min) / ((max - min) / 100);
